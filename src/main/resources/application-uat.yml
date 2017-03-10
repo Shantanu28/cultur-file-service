@@ -1,0 +1,121 @@
+endpoints:
+  restart:
+    enabled: true
+  shutdown:
+    enabled: true
+  health:
+    sensitive: false
+
+zuul:
+  add-proxy-headers: true
+  trace-request-body: true
+  health:
+    enabled: true
+  routes:
+    accounts:
+      serviceId: accountsService 
+      path: /v1/accounts/**
+      url: http://localhost:8080/api-gateway/accounts/
+      stripPrefix: true
+    businesscentre:
+      serviceId: businessCenterService 
+      path: /v1/businesscentre/**
+      url: http://localhost:8080/api-gateway/businesscentre/
+    spget: 
+      path: /v1/spget/**
+      url: http://localhost:8080/api-gateway/spget/
+      stripPrefix: true
+    los: 
+      path: /v1/los/**
+      url: http://localhost:8080/api-gateway/los/
+      stripPrefix: true
+    event: 
+      path: /v1/event/**
+      url: http://localhost:8080/api-gateway/event/
+      stripPrefix: true
+    order:
+      serviceId: orderService 
+      path: /v1/order/**
+      url: http://localhost:8080/api-gateway/order/
+      stripPrefix: true      
+    
+    
+server:
+  port: 8080
+  contextPath: /api-gateway
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    com.amway.integration.accounts.as400.client.AccountsClient: DEBUG
+    com.amway.integration.accounts.as400.client.AddressClient: DEBUG
+    com.amway.integration.los.client.LOSClient: DEBUG
+    com.amway.integration.businesscentre.as400.client.BusinessCentreClient: DEBUG
+    com.amway.integration.orders.as400.client.OrderClient: DEBUG
+      
+spring:
+  application:
+    name: api-gateway
+    version: 1.0.0
+  mvc:
+    throw-exception-if-no-handler-found: true
+com:
+  amway:
+    accounts:
+      server: http://10.172.107.81:8000
+      profile: 
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+        validate: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1
+        create: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1
+        update: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+        address: 
+          get: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+          create: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+          update: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+          delete: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+      voucher: 
+        get: /ibis/servlet/IBISHTTPUploadServlet/DB2XMLInput1
+      payment:
+        token:
+          update: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+          delete: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21        
+    businesscentre:
+      server: http://10.172.107.81:8000
+      awardreport:
+        get: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1      
+      performance:
+        point:
+          get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+        progress:
+          get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+        requalification:
+          get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+      intent-to-continue-report:
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+      monthly-distributor-activity:
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataSQLServer1
+      dd-progress-report:
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21        
+      online-itc-cas:
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+      product-warranty:
+        get: /ibis/servlet/IBISHTTPUploadServlet/GetDataDB21
+      pvbv-inquiry: 
+        get: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1         
+    los:     
+       server: http://wm-us-sb-qa.intranet.local:5656
+    event: 
+      server: 
+      seat-availability: 
+        get: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1
+    order:
+      server: http://10.172.107.81:8000
+      create: /ibis/servlet/IBISHTTPUploadServlet/ExecuteAS400Request1   
+      
+feign:
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true 
